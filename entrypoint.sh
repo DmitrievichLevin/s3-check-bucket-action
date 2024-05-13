@@ -19,7 +19,7 @@ aws s3api head-object --bucket ${AWS_S3_BUCKET}
 # XXX: we are just checking the error code, but should check the result for a 404, and raise error in other cases
 if [ $? == 0 ]
 then
-  echo "::set-output name=exists::true"
+  echo "exists=true" >> $GITHUB_OUTPUT
 else
-  echo "::set-output name=exists::false"
+  echo "exists=false" >> $GITHUB_OUTPUT
 fi
