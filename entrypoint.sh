@@ -22,9 +22,9 @@ fi
 
 if [[ $(aws s3api list-buckets --query "Buckets[?Name == '${AWS_S3_BUCKET}'].[Name]" --output text) = '${AWS_S3_BUCKET}' ]] 
 then 
-    echo 'BUCKET_EXISTS=true' >> $GITHUB_STATE
+    echo 'BUCKET_EXISTS=true' >> $GITHUB_ENV
 else
-    echo 'BUCKET_EXISTS=false' >> $GITHUB_STATE
+    echo 'BUCKET_EXISTS=false' >> $GITHUB_ENV
 fi
 
 # log
