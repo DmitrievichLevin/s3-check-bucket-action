@@ -21,9 +21,9 @@ if [ -z "$AWS_REGION" ]; then
 fi
 
 # log
-echo "Checking for bucket at $(aws s3api list-buckets --query 'Buckets[?Name == `c1edd274-32f7-4c87-aa18-720e1e3379e7`].[Name]' --output text) $AWS_S3_BUCKET"
+echo "Checking for bucket at $(aws s3api list-buckets --query 'Buckets[?Name == `${AWS_S3_BUCKET}`].[Name]' --output text) $AWS_S3_BUCKET"
 
-if [[ $(aws s3api list-buckets --query 'Buckets[?starts_with(Name,`c1edd274-32f7-4c87-aa18-720e1e3379e7`)].[Name]' --output text) ]] 
+if [[ $(aws s3api list-buckets --query 'Buckets[?Name == `c1edd274-32f7-4c87-aa18-720e1e3379e7`].[Name]' --output text) ]] 
 then 
     echo "You're a specific genius. Now do something useful"
     echo 'BUCKET_EXISTS=true' >> $GITHUB_STATE
