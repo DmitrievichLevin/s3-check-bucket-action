@@ -20,7 +20,7 @@ if [ -z "$AWS_REGION" ]; then
   exit 1
 fi
 
-if [[ $(aws s3api list-buckets --query "Buckets[?Name == '${AWS_S3_BUCKET}'].[Name]" --output text) = '${AWS_S3_BUCKET}' ]] 
+if [[ $(aws s3api list-buckets --query "Buckets[?Name == '${AWS_S3_BUCKET}'].[Name]" --output text) == '${AWS_S3_BUCKET}' ]] 
 then 
     echo 'BUCKET_EXISTS=true' >> $GITHUB_ENV
 else
