@@ -22,7 +22,7 @@ fi
 
 # log
 echo "Checking for bucket at s3://${AWS_S3_BUCKET}"
-aws s3api list-buckets --query 'Buckets[?Name == "$AWS_S3_BUCKET"].[Name]' --output text
+aws s3api list-buckets --query 'Buckets[?Name == "${AWS_S3_BUCKET}"].[Name]' --output text
 if if [[ $(aws s3api list-buckets --query 'Buckets[?starts_with(Name,`${AWS_S3_BUCKET}`)].[Name]' --output text) = 'my-bucket' ]] 
 then 
     echo "You're a specific genius. Now do something useful"
