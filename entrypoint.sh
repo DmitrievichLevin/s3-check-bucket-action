@@ -24,7 +24,7 @@ fi
 echo "Checking for bucket at s3://${AWS_S3_BUCKET}"
 
 BUCKET_EXISTS = $(aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text')
-
+aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text'
 echo 'BUCKET_EXISTS=$BUCKET_EXISTS' >> $GITHUB_ENV
 
 echo '$(aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text') bucket exists'
