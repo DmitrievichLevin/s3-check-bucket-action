@@ -27,9 +27,9 @@ aws s3api head-bucket --bucket ${AWS_S3_BUCKET} --output 'text'
 
 if [ $? == 0 ]
 then
-  echo 'BUCKET_EXISTS=true' >> $GITHUB_ENV
+  echo 'BUCKET_EXISTS=true' >> $GITHUB_STATE
 else
-  echo 'BUCKET_EXISTS=false' >> $GITHUB_ENV
+  echo 'BUCKET_EXISTS=false' >> $GITHUB_STATE
 fi
 
 # log
