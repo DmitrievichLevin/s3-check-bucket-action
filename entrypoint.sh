@@ -23,11 +23,10 @@ fi
 # log
 echo "Checking for bucket at s3://${AWS_S3_BUCKET}"
 
-BUCKET_EXISTS = $(aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text')
-aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text'
-echo 'BUCKET_EXISTS=$BUCKET_EXISTS' >> $GITHUB_ENV
+BUCKET_EXISTS = $(aws s3 head-bucket --bucket ${AWS_S3_BUCKET} --output 'text')
+aws s3 head-bucket --bucket ${AWS_S3_BUCKET} --output 'text'
 
-echo '$(aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text') bucket exists'
+echo 'BUCKET_EXISTS=$BUCKET_EXISTS' >> $GITHUB_ENV
 
 # log
 echo "${AWS_S3_BUCKET} exists ${BUCKET_EXISTS}"
