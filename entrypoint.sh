@@ -21,8 +21,8 @@ if [ -z "$AWS_REGION" ]; then
 fi
 
 # log
-echo "Checking for bucket at s3://${AWS_S3_BUCKET}"
-aws s3api list-buckets --query 'Buckets[?Name == "c1edd274-32f7-4c87-aa18-720e1e3379e7"].[Name]' --output text
+echo "Checking for bucket at $(aws s3api list-buckets --query 'Buckets[?Name == "c1edd274-32f7-4c87-aa18-720e1e3379e7"].[Name]' --output text)"
+
 if [[ $(aws s3api list-buckets --query 'Buckets[?starts_with(Name,`${AWS_S3_BUCKET}`)].[Name]' --output text) = `$AWS_S3_BUCKET` ]] 
 then 
     echo "You're a specific genius. Now do something useful"
