@@ -24,12 +24,8 @@ fi
 echo "Checking for bucket at s3://${AWS_S3_BUCKET}"
 
 # Execute a head-object command
-aws s3api head-object --bucket ${AWS_S3_BUCKET}
+EXISTS = $(aws s3api bucket-exists --bucket ${AWS_S3_BUCKET} --output 'text')
 
-# XXX: we are just checking the error code, but should check the result for a 404, and raise error in other cases
-if [ $? == 0 ]
-then
-  echo "exists=true" >> $GITHUB_OUTPUT
-else
-  echo "exists=false" >> $GITHUB_OUTPUT
+echo 'BUCKET_EXISTS=${EXISTS}' >> $GITHUB_ENV
+
 fi
