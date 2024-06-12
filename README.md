@@ -7,40 +7,58 @@ This simple action uses the [vanilla AWS CLI](https://docs.aws.amazon.com/cli/in
 
 ## Usage
 
-This action is particularly useful for scheduled builds (a.k.a nightly builds).
-You don't need to do all the work again if you already have the results from the previous execution, and nothing has changed since then.
-
-GitHub Actions does not provide a way to verify this, so you have to rely on an external `flag` to control this behaviour.
-
-This action relies on an file you host in a S3 bucket. Your build can write a file with the name of the ${GITHUB_SHA}, and before executing the build steps check if the file already exists. If it exists the build does not fail, but creates an output variable that you can check before running the build steps.
+This action is particularly useful for multiple deployments.
+It will assume the supplied AWS IAM Role and check if a S3 bucket exists, and if not create it.
 
 ### `workflow.yml` Example
 
 Place in a `.yml` file such as this one in your `.github/workflows` folder. [Refer to the documentation on workflow YAML syntax here.](https://help.github.com/en/articles/workflow-syntax-for-github-actions)
 
 ```yaml
-name: S3 Check example
-on:
-  schedule:
-    - cron: '0 0 * * *'
+name: S3 Bucket Check AWS Example
 
+on:
+  push:
+    branches:
+      - main
+      - master
+env:
+    AWS_REGION: 'us-east-2'
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+permissions:
+  contents: write 
 jobs:
-  deploy:
+  AssumeRoleAndCallIdentity:
     runs-on: ubuntu-latest
+    permissions:
+          id-token: write
+          contents: read
     steps:
-    - uses: actions/checkout@master
-    - uses: tuler/s3-check-action@master
-      id: check
-      env:
-        FILE: ${{ github.sha }}
-        AWS_REGION: 'us-east-1'
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    - run: echo "Do your thing"
-      if: steps.check.outputs.exists == 'false'
-    - run: echo "Write a file to S3 bucket with name \${GITHUB_SHA}"
-      if: steps.check.outputs.exists == 'false'
+      - uses: actions/checkout@v4
+      - name: configure aws credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }} 
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
+      - name: S3 Bucket Verification
+        id: bucket_check
+        uses: dmitrievichlevin/s3-check-bucket-action@master
+        with:
+          AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.creds.outputs.aws-secret-access-key }}
+      - name: Echo AWS VARS
+        id: s3_output
+        run: |
+            aws s3api head-bucket --bucket ${{env.AWS_S3_BUCKET}} --output 'text'
+      - run: |
+          aws s3 mb s3://${{env.AWS_S3_BUCKET}} --region ${{env.AWS_REGION}}
+      
 ```
 
 
@@ -53,6 +71,7 @@ The following settings must be passed as environment variables as shown in the e
 | `AWS_ACCESS_KEY_ID` | Your AWS Access Key. [More info here.](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html) | `secret` | **Yes** |
 | `AWS_SECRET_ACCESS_KEY` | Your AWS Secret Access Key. [More info here.](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html) | `secret` | **Yes** |
 | `AWS_S3_BUCKET` | The name of the bucket you're syncing to. For example, `jarv.is`. | `secret` | **Yes** |
+| `AWS_ROLE` | ARN of AWS IAM User. For example, `arn:aws:iam::000000000:role/github_workflow_example `. | `secret` | **Yes** |
 | `AWS_REGION` | The region where you created your bucket in. For example, `us-east-1`. [Full list of regions here.](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions) | `env` | **Yes** |
 | `FILE` | The file to check | `env` | **Yes** |
 
