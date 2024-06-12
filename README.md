@@ -1,4 +1,4 @@
-# GitHub Action to check if a file exists in an S3 Bucket
+# GitHub Action to check if a S3 Bucket exists
 
 > **⚠️ Note:** To use this action, you must have access to the [GitHub Actions](https://github.com/features/actions) feature. GitHub Actions are currently only available in public beta. You can [apply for the GitHub Actions beta here](https://github.com/features/actions/signup/).
 
